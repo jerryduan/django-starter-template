@@ -1,0 +1,64 @@
+services:
+  redis:
+    image: "redis:alpine"
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  db:
+    image: "postgres:alpine"
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5432:5432
+
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: app_container
+    restart: unless-stopped
+    entrypoint: ["./docker/scripts/runserver.sh"]
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/usr/src/app
+
+  celery:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: celery_container
+    command: celery -A conf worker -l INFO
+    restart: unless-stopped
+    depends_on:
+      - app
+
+  celerybeat:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: celerybeat_container
+    command: celery -A conf beat -l INFO
+    restart: unless-stopped
+    depends_on:
+      - celery
+
+volumes:
+  postgres-data:
+  redis-data:
