@@ -6,6 +6,12 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    container_name: redis_container
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   db:
     image: "postgres:alpine"
@@ -13,9 +19,9 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -23,6 +29,7 @@ services:
       retries: 5
     ports:
       - 5432:5432
+    container_name: postgres_container
 
   app:
     build:
@@ -30,14 +37,24 @@ services:
       dockerfile: ./docker/Dockerfile
     container_name: app_container
     restart: unless-stopped
+    env_file: .env
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-postgres}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=django-db
     entrypoint: ["./docker/scripts/runserver.sh"]
     ports:
       - "8000:8000"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - .:/usr/src/app
+      - ./logs:/usr/src/app/logs
 
   celery:
     build:
@@ -46,8 +63,17 @@ services:
     container_name: celery_container
     command: celery -A conf worker -l INFO
     restart: unless-stopped
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-postgres}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=django-db
     depends_on:
       - app
+    volumes:
+      - .:/usr/src/app
+      - ./logs:/usr/src/app/logs
 
   celerybeat:
     build:
@@ -56,9 +82,51 @@ services:
     container_name: celerybeat_container
     command: celery -A conf beat -l INFO
     restart: unless-stopped
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-postgres}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=django-db
     depends_on:
       - celery
+    volumes:
+      - .:/usr/src/app
+      - ./logs:/usr/src/app/logs
+
+  # Database management UI
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+  # Test runner service
+  test:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: test_container
+    command: pytest
+    env_file: .env
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-postgres}
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - .:/usr/src/app
+    profiles:
+      - test
 
 volumes:
   postgres-data:
   redis-data:
+  pgadmin-data:

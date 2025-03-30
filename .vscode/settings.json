@@ -63,6 +63,7 @@
         "logoutall",
         "makemigrations",
         "nostatic",
+        "pgadmin",
         "pixbuf",
         "postgresql",
         "psycopg",
