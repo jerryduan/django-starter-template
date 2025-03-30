@@ -69,6 +69,59 @@ This template includes battle-tested features for building secure, scalable, and
 1. Run the project with `python manage.py reserver`.
 1. Work as usual.
 
+## Docker Development
+
+This project includes a comprehensive Docker-based development environment:
+
+### Starting the environment
+
+```bash
+# Start the development environment
+docker compose up -d
+
+# View service logs
+docker compose logs -f
+
+# To only view specific service logs
+docker compose logs -f app
+```
+
+### Stopping the environment
+
+```bash
+# Stop the development environment
+docker compose down
+```
+### Running commands inside the container
+```bash
+# Run a command inside the app container
+docker compose exec app bash
+```
+### Running tests inside the container
+#### Run tests
+./docker/scripts/dev.sh test
+
+#### Run tests with coverage report
+./docker/scripts/dev.sh coverage
+
+#### Create a superuser
+./docker/scripts/dev.sh superuser
+
+#### Run migrations
+./docker/scripts/dev.sh migrate
+
+#### Make migrations
+./docker/scripts/dev.sh makemigrations
+
+#### Start Django shell
+./docker/scripts/dev.sh shell
+
+#### Start pgAdmin for database management
+./docker/scripts/dev.sh pgadmin
+
+#### View logs
+./docker/scripts/dev.sh logs [service_name]
+
 ## Commands 🛠️
 
 This section provides a list of useful commands to help you manage and develop your Django project efficiently.
