@@ -23,6 +23,9 @@ def create_dev_env():
         f.write(
             "DEBUG=True\n"
             "DJANGO_SECRET_KEY=django-insecure-wlgjuo53y49%-4y5(!%ksylle_ud%b=7%__@9hh+@$d%_^y3s!\n"  # noqa
-            "DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres\n"
+            "DATABASE_URL=postgres://postgres:postgres@db:5432/postgres\n"
+            "REDIS_URL=redis://redis:6379/0\n"
+            "CELERY_BROKER_URL=redis://redis:6379/0\n"
+            "CELERY_RESULT_BACKEND=django-db\n"
         )
     print(".env file created successfully.")
