@@ -94,7 +94,6 @@ services:
       - .:/usr/src/app
       - ./logs:/usr/src/app/logs
 
-  # Database management UI
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin_container
@@ -109,7 +108,6 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
 
-  # Test runner service
   test:
     build:
       context: .
