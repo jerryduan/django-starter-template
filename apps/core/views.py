@@ -3,6 +3,11 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import api_view, throttle_classes
 from rest_framework.throttling import AnonRateThrottle
 import logging
+from django.db import connection
+from django.core.cache import cache
+from redis import Redis
+from django.conf import settings
+from .decorators import monitor_performance
 
 logger = logging.getLogger(__name__)
 
@@ -49,3 +54,75 @@ def fire_task(request):
         return JsonResponse({"task": "Task fired"})
 
     return JsonResponse({"error": "Method Not Allowed"}, status=405)
+
+
+@extend_schema(
+    description=(
+        "Health check endpoint that verifies the status of all system components."
+    ),
+    responses={
+        200: {
+            "type": "object",
+            "properties": {
+                "status": {"type": "string"},
+                "database": {"type": "object"},
+                "cache": {"type": "object"},
+                "redis": {"type": "object"},
+            },
+        },
+        503: {
+            "type": "object",
+            "properties": {
+                "status": {"type": "string"},
+                "error": {"type": "string"},
+            },
+        },
+    },
+)
+@api_view(["GET"])
+@monitor_performance
+def health_check(request):
+    health_status = {
+        "status": "healthy",
+        "database": {"status": "healthy"},
+        "cache": {"status": "healthy"},
+        "redis": {"status": "healthy"},
+    }
+
+    # Check database
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        health_status["database"]["status"] = "healthy"
+    except Exception as e:
+        health_status["database"]["status"] = "unhealthy"
+        health_status["database"]["error"] = str(e)
+        health_status["status"] = "unhealthy"
+
+    # Check cache
+    try:
+        cache.set("health_check", "ok", 1)
+        if cache.get("health_check") == "ok":
+            health_status["cache"]["status"] = "healthy"
+        else:
+            health_status["cache"]["status"] = "unhealthy"
+            health_status["cache"]["error"] = "Cache get/set failed"
+            health_status["status"] = "unhealthy"
+    except Exception as e:
+        health_status["cache"]["status"] = "unhealthy"
+        health_status["cache"]["error"] = str(e)
+        health_status["status"] = "unhealthy"
+
+    # Check Redis if configured
+    if hasattr(settings, "REDIS_URL"):
+        try:
+            redis_client = Redis.from_url(settings.REDIS_URL)
+            redis_client.ping()
+            health_status["redis"]["status"] = "healthy"
+        except Exception as e:
+            health_status["redis"]["status"] = "unhealthy"
+            health_status["redis"]["error"] = str(e)
+            health_status["status"] = "unhealthy"
+
+    status_code = 200 if health_status["status"] == "healthy" else 503
+    return JsonResponse(health_status, status=status_code)

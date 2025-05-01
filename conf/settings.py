@@ -34,6 +34,19 @@ USE_TZ = True
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 AUTH_USER_MODEL = "users.CustomUser"
+
+# Security Headers
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_REFERRER_POLICY = "same-origin"
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
@@ -87,6 +100,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "apps.core.middleware.RequestLoggingMiddleware",
 ]
 
 
@@ -208,37 +222,61 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "console": {"format": "%(name)-12s %(levelname)-8s %(message)s"},
-        "file": {"format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"},
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "json": {
+            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "format": "%(asctime)s %(levelname)s %(name)s %(message)s",
+        },
     },
     "handlers": {
-        "console": {"class": "logging.StreamHandler", "formatter": "console"},
-        "info_file": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "json_file": {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
-            "formatter": "file",
-            "filename": f"{root_path('logs')}/info.log",
-            "maxBytes": 1000000,
+            "formatter": "json",
+            "filename": f"{root_path('logs')}/app.json",
+            "maxBytes": 10485760,  # 10MB
             "backupCount": 10,
         },
         "error_file": {
             "level": "ERROR",
             "class": "logging.handlers.RotatingFileHandler",
-            "formatter": "file",
-            "filename": f"{root_path('logs')}/error.log",
-            "maxBytes": 1000000,
+            "formatter": "json",
+            "filename": f"{root_path('logs')}/error.json",
+            "maxBytes": 10485760,  # 10MB
             "backupCount": 10,
         },
     },
     "loggers": {
-        "": {
+        "": {  # Root logger
             "level": "INFO",
-            "handlers": ["console", "info_file", "error_file"],
+            "handlers": ["console", "json_file", "error_file"],
             "propagate": True,
         },
-        "apps.users.views": {
+        "django": {
             "level": "INFO",
-            "handlers": ["console", "info_file", "error_file"],
+            "handlers": ["console", "json_file", "error_file"],
+            "propagate": False,
+        },
+        "django.request": {
+            "level": "ERROR",
+            "handlers": ["console", "json_file", "error_file"],
+            "propagate": False,
+        },
+        "django.db.backends": {
+            "level": "ERROR",
+            "handlers": ["console", "json_file", "error_file"],
+            "propagate": False,
+        },
+        "apps": {
+            "level": "INFO",
+            "handlers": ["console", "json_file", "error_file"],
             "propagate": False,
         },
     },
@@ -247,13 +285,17 @@ LOGGING = {
 if not DEBUG:
     sentry_sdk.init(
         dsn=env("SENTRY_DSN"),
-        # Set traces_sample_rate to 1.0 to capture 100%
-        # of transactions for tracing.
-        traces_sample_rate=1.0,
-        # Set profiles_sample_rate to 1.0 to profile 100%
-        # of sampled transactions.
-        # We recommend adjusting this value in production.
-        profiles_sample_rate=1.0,
+        traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=0.1),
+        profiles_sample_rate=env.float("SENTRY_PROFILES_SAMPLE_RATE", default=0.1),
+        environment=env("ENVIRONMENT", default="production"),
+        release=env("VERSION", default="0.1.0"),
+        before_send=lambda event, hint: {
+            **event,
+            "tags": {
+                **event.get("tags", {}),
+                "service": "django-api",
+            },
+        },
     )
 
 
