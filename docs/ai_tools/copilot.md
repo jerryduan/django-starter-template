@@ -1,57 +1,57 @@
 # GitHub Copilot
 
-This page provides detailed information and guidelines for using GitHub Copilot within this project.
+本页提供在本项目中使用 GitHub Copilot 的详细说明与指南。
 
-## Technical Requirements and Communication Standards
+## 技术要求与沟通规范
 
-This project adheres to specific technical requirements and communication standards for Django backend development when using GitHub Copilot:
+在使用 Copilot 进行 Django 后端开发时，本项目遵循以下技术要求与沟通规范：
 
-**Framework & Core Dependencies:**
-- Django 5.2+ with Django REST Framework
-- PostgreSQL database
-- Redis for caching
-- Authentication via django-rest-knox
-- API documentation using drf-spectacular
-- Testing framework: Pytest or Django/DRF TestCase
+**框架与核心依赖：**
+- Django 5.2+ 与 DRF
+- PostgreSQL 数据库
+- Redis 缓存
+- 认证使用 django-rest-knox
+- API 文档使用 drf-spectacular
+- 测试框架：Pytest 或 Django/DRF TestCase
 
-**Project Structure:**
-- Test files must be placed in each app's `tests` directory
-- Follow Django's recommended project layout
-- Implement RESTful API patterns
+**项目结构：**
+- 测试文件置于各应用的 `tests` 目录
+- 遵循 Django 推荐的项目布局
+- 实现 RESTful API 模式
 
-**Development Guidelines:**
-1. All implementations must follow Django's best practices and security standards
-2. Use Django REST Framework viewsets and serializers when building APIs
-3. Implement proper authentication and permission checks using knox
-4. Cache expensive operations using Redis
-5. Document all APIs using OpenAPI/Swagger via drf-spectacular
+**开发指南：**
+1. 遵循 Django 最佳实践与安全标准
+2. 构建 API 时使用 DRF 的 viewsets 与 serializers
+3. 使用 knox 实现认证与权限校验
+4. 对昂贵操作使用 Redis 缓存
+5. 通过 drf-spectacular 使用 OpenAPI/Swagger 记录接口
 
-**Testing Requirements:**
-1. Write comprehensive unit tests for all features
-2. Follow Pytest conventions and patterns
-3. Achieve minimum test coverage as per project standards
-4. Include both positive and negative test scenarios
+**测试要求：**
+1. 为所有功能编写全面的单元测试
+2. 遵循 Pytest 约定与模式
+3. 达到项目规定的最低覆盖率
+4. 同时覆盖正向与异常场景
 
-**Documentation:**
-1. Reference official Django and DRF documentation
-2. Include docstrings for all classes and methods that have an important role
-3. Document API endpoints using drf-spectacular decorators
+**文档：**
+1. 参考官方 Django 与 DRF 文档
+2. 为重要类与方法编写 docstring
+3. 使用 drf-spectacular 装饰器记录 API 端点
 
-**Response Format:**
-1. Provide direct, implementation-focused answers
-2. Highlight any missing information needed for implementation
-3. Include code examples only when explicitly requested
-4. Format code according to PEP 8 standards
+**回答格式：**
+1. 提供直接、面向实现的答案
+2. 指出实现所需但缺失的信息
+3. 仅在明确请求时提供代码示例
+4. 遵循 PEP 8 代码风格
 
-- Utilize context7 MCP for current documentation when applicable
+- 在适用时利用 context7 MCP 获取当前文档
 
-All responses must focus on technical implementation within these specifications and avoid theoretical discussions or alternative technology suggestions.
+所有回答需聚焦在上述规范下的技术实现，避免理论化讨论或无关技术建议。
 
 
 
-### Feature Prompt (`feature.prompt.md`)
+### Feature Prompt（`feature.prompt.md`）
 
-**Purpose:** Use this prompt when you need to plan and implement a new feature. It guides Copilot to think about the feature's overview, impact, implementation plan, code, and integration strategy.
+**用途：** 规划与实现新功能时使用，引导 Copilot 从概览、影响、实施计划、代码到集成策略进行思考。
 
 ```markdown
 As a professional developer, analyze and implement a new feature in the codebase following these guidelines:
@@ -89,9 +89,9 @@ As a professional developer, analyze and implement a new feature in the codebase
 Include benchmark results, security review findings, and maintainability metrics for each implemented component. Prioritize clean architecture and SOLID principles.
 ```
 
-### Refactor Prompt (`refactor.prompt.md`)
+### Refactor Prompt（`refactor.prompt.md`）
 
-**Purpose:** Use this prompt when you want to refactor existing code. It directs Copilot to focus on performance, security, maintainability, and readability, providing a structured approach to code improvement.
+**用途：** 重构既有代码时使用，使 Copilot 聚焦性能、安全、可维护性与可读性并提供结构化改进建议。
 
 ```markdown
 As a senior software engineer, analyze the provided code and suggest specific refactoring improvements focusing on these key aspects:
@@ -129,9 +129,9 @@ For each suggested improvement:
 Please provide the code you want to refactor, and specify any constraints or requirements specific to your project's context.
 ```
 
-### Security Prompt (`security.prompt.md`)
+### Security Prompt（`security.prompt.md`）
 
-**Purpose:** Use this prompt to conduct a security review of your API implementation. It guides Copilot to check for authentication, authorization, input validation, rate limiting, and security monitoring.
+**用途：** 用于进行 API 安全审查，引导 Copilot 检查认证、授权、输入校验、限流与安全监控。
 
 ```markdown
 Conduct a comprehensive security review of the REST API implementation according to industry best practices. Review and implement the following security controls:
@@ -168,9 +168,9 @@ References:
 - NIST Security Guidelines for Web Services
 ```
 
-### Test Model Prompt (`test-model.prompt.md`)
+### Test Model Prompt（`test-model.prompt.md`）
 
-**Purpose:** Use this prompt when writing tests for Django models. It ensures comprehensive test coverage for field validation, relationships, data operations, edge cases, and performance.
+**用途：** 为 Django 模型编写测试时使用，确保字段校验、关系、数据操作、边界与性能的全面覆盖。
 
 ```markdown
 Write comprehensive model tests for Django applications adhering to the following specifications:
@@ -229,9 +229,9 @@ Write comprehensive model tests for Django applications adhering to the followin
 Use appropriate fixtures and mocking strategies to ensure tests are isolated and repeatable.
 ```
 
-### Test View Prompt (`test-view.prompt.md`)
+### Test View Prompt（`test-view.prompt.md`）
 
-**Purpose:** Use this prompt when writing tests for Django REST framework API views. It ensures comprehensive test coverage for authentication, security, HTTP methods, response validation, and edge cases.
+**用途：** 为 DRF 视图编写测试时使用，确保认证、安全、HTTP 方法、响应校验与边界场景的全面覆盖。
 
 ```markdown
 Generate comprehensive test suite for Django REST framework API views following these requirements:
@@ -273,9 +273,9 @@ Reference Django REST framework testing documentation for best practices:
 https://www.django-rest-framework.org/api-guide/testing/
 ```
 
-## Reusable Prompts
+## 可复用 Prompts
 
-Specific reusable prompts for various tasks are located in the [.github/prompts/](../../.github/prompts/) directory:
+针对不同任务的可复用 Prompts 位于 [.github/prompts/](../../.github/prompts/)：
 *   `feature.prompt.md`
 *   `refactor.prompt.md`
 *   `security.prompt.md`

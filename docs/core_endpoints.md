@@ -1,56 +1,56 @@
-# Core Application
+# 核心应用（Core）
 
-## Overview
+## 概览
 
-This section provides an overview of the Core application (`apps/core/`), which serves as a foundational component within the Django Starter Template. It encapsulates common utilities, middleware, base tasks, and essential API endpoints.
+核心应用（`apps/core/`）提供项目基础能力：通用工具、中间件、任务基类与关键 API 端点。
 
-## Key Functionalities
+## 关键功能
 
-The `apps/core/` directory includes the following key functionalities:
+`apps/core/` 包含以下功能：
 
-*   **Middleware**: Contains custom middleware, such as `RequestIDMiddleware`, which enriches logs and responses with request-specific details like `request_id`, client IP, and response time.
-*   **Tasks**: Provides base Celery task classes, including `BaseTaskWithRetry`, which offers common functionalities like automatic retries for background tasks, enhancing task reliability.
-*   **Schema**: Defines common OpenAPI schema components and examples, promoting reusability and consistency across API documentation.
-*   **Management Commands**: Includes custom Django management commands, such as the `seed` command, designed for populating the database with sample data for development and testing purposes.
+*   **Middleware**：如 `RequestIDMiddleware`，为日志与响应注入 `request_id`、客户端 IP、响应时间等信息。
+*   **Tasks**：Celery 任务基类 `BaseTaskWithRetry`，提供自动重试等通用能力。
+*   **Schema**：通用 OpenAPI 组件与示例，提升文档复用与一致性。
+*   **管理命令**：如 `seed`，用于开发与测试阶段批量生成示例数据。
 
-## API Endpoints
+## API 端点
 
-The Core application exposes the following API endpoints, all prefixed with `/core/`:
+核心应用暴露以下端点（统一前缀 `/core/`）：
 
 ### Ping
 
-This is a simple endpoint designed to verify that the server is operational and responsive.
+用于检查服务器是否正常响应的简易端点。
 
-**Request:**
+**请求：**
 
 *   **Method:** `GET`
 *   **URL:** `/core/ping/`
 
-**Responses:**
+**响应：**
 
-*   **Success (200 OK):**
+*   **成功（200 OK）：**
     ```json
     {
         "ping": "pong"
     }
     ```
-    *   Returns a JSON object with a `ping` key and `pong` value, indicating a successful response.
+    *   返回 `{"ping":"pong"}`，表示正常响应。
 
 ### Fire Task
 
-This endpoint triggers a sample Celery task in the background. It's useful for testing the Celery setup and task execution.
+触发示例 Celery 任务，用于测试任务执行与队列配置。
 
-**Request:**
+**请求：**
 
 *   **Method:** `GET`
 *   **URL:** `/core/fire-task/`
 
-**Responses:**
+**响应：**
 
-*   **Success (200 OK):**
+*   **成功（200 OK）：**
     ```json
     {
         "task": "Task fired"
     }
     ```
-    *   Returns a confirmation that the task has been successfully initiated.
+    *   返回任务已触发的确认信息。

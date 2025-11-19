@@ -1,43 +1,43 @@
-# Project Dependencies
+# 项目依赖
 
-## Overview
+## 概览
 
-This project utilizes [Poetry](https://python-poetry.org/) as its dependency management tool. Poetry ensures consistent project environments by managing dependencies, virtual environments, and packaging. All project dependencies are defined in the `pyproject.toml` file, categorized into main dependencies and development-specific dependencies.
+本项目使用 [Poetry](https://python-poetry.org/) 管理依赖与虚拟环境。所有依赖在 `pyproject.toml` 中定义，分为生产依赖与开发依赖。
 
-## Main Dependencies
+## 生产依赖
 
-The following are the primary dependencies required for the application to run in production:
+以下为生产环境所需的主要依赖：
 
-*   **`python`**: Specifies the compatible Python version. **Version:** `^3.13`
-*   **`django`**: The web framework for perfectionists with deadlines. **Version:** `^5.1.2`
-*   **`django-environ`**: Manages environment variables for Django settings. **Version:** `^0.12.0`
-*   **`django-cors-headers`**: Handles Cross-Origin Resource Sharing (CORS) headers. **Version:** `^4.5.0`
-*   **`djangorestframework`**: A powerful and flexible toolkit for building Web APIs. **Version:** `^3.15.2`
-*   **`psycopg2`**: PostgreSQL adapter for Python. **Version:** `^2.9.10`
-*   **`whitenoise`**: Serves static files efficiently in production. **Version:** `^6.7.0`
-*   **`gunicorn`**: A Python WSGI HTTP Server for UNIX. **Version:** `^23.0.0`
-*   **`django-rest-knox`**: Token-based authentication for Django REST Framework. **Version:** `^5.0.2`
-*   **`redis`**: Python client for Redis. **Version:** `^6.0.0`
-*   **`celery`**: Distributed task queue. **Version:** `^5.4.0`
-*   **`django-celery-beat`**: A periodic task scheduler for Celery. **Version:** `^2.7.0`
-*   **`django-celery-results`**: Stores Celery task results in Django models. **Version:** `^2.5.1`
-*   **`sentry-sdk`**: Official Sentry SDK for Python, with Django integration. **Version:** `^2.17.0`
-*   **`django-redis`**: Full-featured Redis cache backend for Django. **Version:** `^6.0.0`
-*   **`drf-spectacular`**: OpenAPI 3 schema generation for Django REST Framework. **Version:** `^0.28.0`
-*   **`faker`**: Generates fake data for testing and development. **Version:** `^37.1.0`
-*   **`django-seed`**: Populates Django database with random data. **Version:** `^0.3.1`
-*   **`django-extensions`**: A collection of custom extensions for Django. **Version:** `^4.1`
-*   **`django-filter`**: Reusable Django application for filtering querysets. **Version:** `^25.1`
-*   **`python-json-logger`**: A JSON formatter for Python logging. **Version:** `^3.3.0`
+*   **`python`**：Python 版本约束 `^3.13`
+*   **`django`**：Web 框架 `^5.1.2`
+*   **`django-environ`**：环境变量管理 `^0.12.0`
+*   **`django-cors-headers`**：CORS 处理 `^4.5.0`
+*   **`djangorestframework`**：Web API 工具包 `^3.15.2`
+*   **`psycopg2`**：PostgreSQL 适配器 `^2.9.10`
+*   **`whitenoise`**：生产静态文件服务 `^6.7.0`
+*   **`gunicorn`**：WSGI 服务器 `^23.0.0`
+*   **`django-rest-knox`**：基于 Token 的认证 `^5.0.2`
+*   **`redis`**：Redis 客户端 `^6.0.0`
+*   **`celery`**：分布式任务队列 `^5.4.0`
+*   **`django-celery-beat`**：周期任务调度器 `^2.7.0`
+*   **`django-celery-results`**：Celery 结果存储 `^2.5.1`
+*   **`sentry-sdk`**：Sentry Python SDK（Django 集成）`^2.17.0`
+*   **`django-redis`**：Redis 缓存后端 `^6.0.0`
+*   **`drf-spectacular`**：OpenAPI 3 文档生成 `^0.28.0`
+*   **`faker`**：生成测试/开发用假数据 `^37.1.0`
+*   **`django-seed`**：批量填充数据 `^0.3.1`
+*   **`django-extensions`**：Django 扩展集 `^4.1`
+*   **`django-filter`**：查询过滤 `^25.1`
+*   **`python-json-logger`**：JSON 日志格式化 `^3.3.0`
 
 
-## Development Dependencies
+## 开发依赖
 
-- **django-debug-toolbar**: ^5.0.0
-- **pytest**: ^8.3.3
-- **pytest-django**: ^4.9.0
-- **ipykernel**: ^6.29.5
-- **pytest-mock**: ^3.14.0
-- **pytest-cov**: ^6.0.0
-- **mkdocs**: ^1.6.0
-- **mkdocs-material**: ^9.5.26
+- **django-debug-toolbar**：^5.0.0
+- **pytest**：^8.3.3
+- **pytest-django**：^4.9.0
+- **ipykernel**：^6.29.5
+- **pytest-mock**：^3.14.0
+- **pytest-cov**：^6.0.0
+- **mkdocs**：^1.6.0
+- **mkdocs-material**：^9.5.26

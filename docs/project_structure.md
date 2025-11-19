@@ -1,8 +1,8 @@
-# Project Structure
+# 项目结构
 
-## Overview
+## 概览
 
-Understanding the project's directory structure is fundamental for navigating, developing, and maintaining the Django Starter Template. This document provides a detailed overview of the main directories and files, explaining their purpose and contents to help you quickly grasp the project's organization.
+掌握项目的目录结构有助于高效导航、开发与维护。本文档对主要目录与文件进行说明，帮助快速理解整体组织方式。
 
 ```
 ├── .clinerules/                # Gemini CLI rules
@@ -66,42 +66,42 @@ Understanding the project's directory structure is fundamental for navigating, d
 └── templates/                  # Project-wide HTML templates
 ```
 
-## Key Directories
+## 关键目录
 
 This section describes the primary directories within the project and their respective purposes:
 
-*   **`.devcontainer/`**: Contains configuration files for Visual Studio Code Dev Containers. This ensures a consistent and reproducible development environment across different machines, pre-configured with all necessary tools and dependencies.
+*   **`.devcontainer/`**：VS Code Dev Container 配置，提供一致、可复现的开发环境。
 
-*   **`.github/`**: Stores GitHub-specific files, including GitHub Actions workflows for Continuous Integration (CI) and Continuous Deployment (CD), issue templates, and other repository settings. This directory automates various development processes.
+*   **`.github/`**：GitHub 相关配置，含 Actions 工作流、模板与仓库设置。
 
-*   **`.vscode/`**: Holds Visual Studio Code workspace settings and recommended extensions for the project. These settings enhance the development experience by providing consistent formatting, linting, and debugging configurations.
+*   **`.vscode/`**：VS Code 工作区设置与推荐扩展，统一格式化、Lint 与调试配置。
 
-*   **`apps/`**: This is the core of your Django project, where individual Django applications (modules) reside. Each app is designed to be a self-contained unit responsible for a specific feature or set of features, promoting modularity and reusability.
-    *   **`core/`**: Houses fundamental functionalities and shared components that are used across different parts of the application. This includes custom management commands, base Celery tasks, and common API schema definitions, serving as a foundational app.
-    *   **`users/`**: Manages all aspects of user authentication and authorization. This includes user models, serializers, views, and related utilities for user registration, login, and profile management.
+*   **`apps/`**：Django 应用模块所在目录，面向特定功能的可复用单元。
+    *   **`core/`**：基础能力与通用组件（管理命令、Celery 任务基类、通用 OpenAPI Schema 等）。
+    *   **`users/`**：用户认证与授权（模型、序列化器、视图与相关工具）。
 
-*   **`conf/`**: Contains project-wide configuration files that apply to the entire Django project, rather than being specific to a single app. This includes the main `settings.py`, URL routing (`urls.py`), ASGI/WSGI configurations, and Celery setup.
+*   **`conf/`**：项目级配置（`settings.py`、`urls.py`、ASGI/WSGI、Celery）。
 
-*   **`logs/`**: The designated directory for application log files. Different log levels and types (e.g., general application logs, security events, error logs) are typically written to separate files within this directory for easier monitoring and debugging.
+*   **`logs/`**：应用日志目录，区分不同日志类型便于监控与排障。
 
-*   **`scripts/`**: A collection of utility scripts that automate various development and maintenance tasks. These scripts can include commands for running the server, managing migrations, or executing custom project-specific operations.
+*   **`scripts/`**：自动化与维护脚本（运行服务器、迁移等）。
 
-*   **`static/`**: Stores static assets such as CSS stylesheets, JavaScript files, and images. These files are typically served directly by the web server and are essential for the frontend of the application.
+*   **`static/`**：静态资源（CSS/JS/图片）。
 
-*   **`templates/`**: Contains project-wide HTML templates that are not specific to any single Django application. These templates can be used for common pages like error pages or base layouts.
+*   **`templates/`**：项目级 HTML 模板（错误页、基础布局等）。
 
-## Key Files
+## 关键文件
 
 This section outlines the most important files at the project root and their functions:
 
-*   **`.env.example`**: A template file that outlines all the environment variables required by the project. Developers should copy this to a `.env` file and fill in their specific values for local development, ensuring sensitive information is not hardcoded.
+*   **`.env.example`**：环境变量示例模板，复制为 `.env` 并填写实际值。
 
-*   **`manage.py`**: Django's command-line utility for administrative tasks. This script is used for running the development server, performing database migrations, creating superusers, and executing custom management commands.
+*   **`manage.py`**：Django 命令行工具，用于运行服务、迁移、创建超管与管理命令等。
 
-*   **`pyproject.toml`**: Used by Poetry (the dependency management tool) to define project metadata, dependencies, and build configurations. It serves as the central point for managing the project's Python environment.
+*   **`pyproject.toml`**：Poetry 的项目元数据与依赖配置文件。
 
-*   **`pytest.ini`**: The configuration file for `pytest`, the testing framework used in this project. It specifies how tests should be discovered and run, including settings for code coverage analysis.
+*   **`pytest.ini`**：`pytest` 测试配置，包含覆盖率与发现规则。
 
-*   **`README.md`**: The main project documentation file, providing a high-level overview, quick start instructions, key features, and links to more detailed documentation. It's the first file new contributors typically read.
+*   **`README.md`**：项目概览与快速开始指南，关键特性与文档链接。
 
-By adhering to this structured layout, the project promotes modularity, maintainability, and scalability, making it easier for developers to understand and contribute to the codebase.
+遵循以上结构可提升模块化、可维护性与可扩展性，方便团队理解与协作。

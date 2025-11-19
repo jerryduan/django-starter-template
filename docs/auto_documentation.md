@@ -1,22 +1,20 @@
-# API Auto-Documentation
+# API 自动文档
 
-## Overview
+## 概览
 
-This section details the automatic API documentation system implemented in the Django Starter Template, which leverages `drf-spectacular` to generate OpenAPI 3 (Swagger) documentation. This ensures that your API documentation remains synchronized with your codebase, minimizing manual effort and potential inconsistencies.
+本节介绍项目的自动化 API 文档方案，基于 `drf-spectacular` 生成 OpenAPI 3（Swagger）文档，使文档与代码保持同步，降低维护成本并避免不一致。
 
-## What is `drf-spectacular`?
+## 什么是 `drf-spectacular`？
 
-`drf-spectacular` is a powerful library that integrates seamlessly with Django REST Framework to generate a comprehensive OpenAPI schema from your DRF views, serializers, and other components. This schema can then be used to render interactive API documentation (like Swagger UI) or generate client SDKs.
+`drf-spectacular` 与 DRF 深度集成，可从视图、序列化器等组件生成完整的 OpenAPI Schema，并用于渲染交互式文档（如 Swagger UI）或生成客户端 SDK。
 
-## How it's Used in This Project (Best Practices)
+## 在项目中的使用（最佳实践）
 
-This template follows best practices for `drf-spectacular` integration to provide rich and accurate API documentation.
+模板遵循最佳实践以产出丰富且准确的 API 文档。
 
-### 1. Centralized Schema Definitions
+### 1. 统一的 Schema 定义
 
-Instead of defining all schema details directly within views, this project centralizes reusable schema components (like error responses and common examples) in dedicated `schema.py` files within each app (e.g., `apps/users/schema.py`, `apps/core/schema.py`).
-
-This promotes reusability and keeps your view logic clean. For example, common error responses are defined once and reused across multiple endpoints.
+项目将可复用的 Schema 组件（如错误响应与通用示例）集中放在各应用的 `schema.py`，而非散落在视图中，从而提升复用性并保持视图简洁。
 
 ```python
 # Example from apps/core/schema.py
@@ -41,14 +39,14 @@ UNAUTHORIZED_EXAMPLES = [
 ]
 ```
 
-### 2. `extend_schema` Decorator for Views
+### 2. 视图使用 `extend_schema`
 
-The `extend_schema` decorator is used on API views to provide additional metadata that `drf-spectacular` cannot infer automatically. This includes:
+在 API 视图上使用 `extend_schema` 补充 `drf-spectacular` 难以自动推断的元数据，包括：
 
-*   **Responses**: Defining expected success and error responses, often referencing the centralized schema definitions.
-*   **Request Bodies**: Specifying the structure of request payloads.
-*   **Parameters**: Documenting query parameters, path parameters, and headers.
-*   **Description**: Adding human-readable descriptions for endpoints.
+*   **响应**：成功与错误响应，通常引用集中定义的 Schema
+*   **请求体**：明确请求负载结构
+*   **参数**：记录查询参数、路径参数与头部
+*   **描述**：添加端点说明
 
 **Example (from `apps/users/views.py` for LoginView):**
 
@@ -61,11 +59,11 @@ class LoginView(KnoxLoginView):
     # ... view implementation
 ```
 
-Here, `LOGIN_RESPONSE_SCHEMA` is imported from `apps/users/schema.py`, ensuring consistency and reusability.
+此处的 `LOGIN_RESPONSE_SCHEMA` 来自 `apps/users/schema.py`，保证一致性与复用。
 
-### 3. `SPECTACULAR_SETTINGS` in `conf/settings.py`
+### 3. `conf/settings.py` 中的 `SPECTACULAR_SETTINGS`
 
-Global settings for `drf-spectacular` are configured in `conf/settings.py` under the `SPECTACULAR_SETTINGS` dictionary. This includes basic API metadata like title, description, and version.
+在 `conf/settings.py` 的 `SPECTACULAR_SETTINGS` 中配置全局参数，如标题、描述与版本号。
 
 ```python
 # Example from conf/settings.py
@@ -77,13 +75,13 @@ SPECTACULAR_SETTINGS = {
 }
 ```
 
-### 4. Interactive Swagger UI
+### 4. 交互式 Swagger UI
 
-The generated OpenAPI schema is served via Swagger UI, providing an interactive and user-friendly interface to explore and test the API. You can access it at:
+OpenAPI Schema 将通过 Swagger UI 提供交互式文档界面，便于探索与测试 API：
 
 `/api/schema/swagger-ui/`
 
-This endpoint is configured in `conf/urls.py`:
+该端点在 `conf/urls.py` 中配置：
 
 ```python
 # Example from conf/urls.py
@@ -104,4 +102,4 @@ if settings.DEBUG:
     ]
 ```
 
-By following these practices, the project ensures that its API documentation is robust, maintainable, and automatically generated, reflecting the true state of the API.
+遵循以上实践，文档将保持健壮、易维护且自动生成，真实反映 API 状态。

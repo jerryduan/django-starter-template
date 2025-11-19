@@ -1,24 +1,24 @@
-# Celery Tasks
+# Celery 任务
 
-This section provides a comprehensive guide to working with Celery tasks in the Django Starter Template, including how to create, configure, and manage them, with a focus on retry mechanisms and periodic tasks.
+本节介绍在项目中使用 Celery 的方法，包括创建、配置与管理任务，重点说明重试机制与周期任务。
 
-## Overview
+## 概览
 
-Celery is an asynchronous task queue/job queue based on distributed message passing. It's used in this project to offload long-running operations from the main request-response cycle, improving application responsiveness and scalability.
+Celery 是基于分布式消息的异步任务队列。本项目使用 Celery 以将耗时操作移出请求主流程，提升响应与可扩展性。
 
-## Configuration
+## 配置
 
-Celery is configured in `conf/celery.py`. It integrates with Django's settings, allowing you to manage Celery-related configurations within your Django project.
+Celery 在 `conf/celery.py` 中配置，并与 Django 设置集成。
 
-Key settings are typically found in `conf/settings.py`:
+关键设置位于 `conf/settings.py`：
 
-*   `CELERY_BROKER_URL`: The URL for the message broker (e.g., Redis).
-*   `CELERY_RESULT_BACKEND`: Where task results are stored (e.g., Django database).
-*   `CELERY_BEAT_SCHEDULER`: Specifies the scheduler for periodic tasks.
+*   `CELERY_BROKER_URL`：消息代理 URL（如 Redis）
+*   `CELERY_RESULT_BACKEND`：任务结果存储（如 Django 数据库）
+*   `CELERY_BEAT_SCHEDULER`：周期任务调度器
 
-## Creating New Tasks
+## 创建新任务
 
-To create a new Celery task, use the `@shared_task` decorator from `celery`.
+使用 `@shared_task` 创建新任务：
 
 ```python
 from celery import shared_task
@@ -29,22 +29,22 @@ def my_new_task(arg1, arg2):
     print(f"Executing my_new_task with {arg1} and {arg2}")
 ```
 
-Place your task definitions in `tasks.py` files within your Django apps (e.g., `apps/core/tasks.py`). Celery is configured to automatically discover tasks in installed apps.
+将任务定义放在各应用的 `tasks.py`（如 `apps/core/tasks.py`）。Celery 会自动发现。
 
-## Task Retries
+## 任务重试
 
-The template provides a custom base task class, `BaseTaskWithRetry`, located in `apps/core/tasks.py`, which simplifies implementing retry logic for your tasks.
+模板提供 `apps/core/tasks.py` 中的任务基类 `BaseTaskWithRetry`，简化重试逻辑实现。
 
-### `BaseTaskWithRetry` Attributes
+### `BaseTaskWithRetry` 属性
 
-*   `autoretry_for`: A tuple of exception types that should trigger a retry. If any of these exceptions occur during task execution, Celery will automatically retry the task.
-*   `retry_kwargs`: A dictionary of keyword arguments passed to the `retry()` method. The most common is `max_retries`, which defines the maximum number of times the task will be retried.
-*   `retry_backoff`: The initial delay in seconds before the first retry attempt. Subsequent retries will have an exponentially increasing delay.
-*   `retry_jitter`: A boolean that, when `True`, adds a random component to the retry delay. This helps prevent all failed tasks from retrying simultaneously, which can lead to a "thundering herd" problem.
+*   `autoretry_for`：触发自动重试的异常类型集合。
+*   `retry_kwargs`：传递给 `retry()` 的参数，如 `max_retries`。
+*   `retry_backoff`：首次重试前的延迟（秒），后续指数增加。
+*   `retry_jitter`：是否添加随机抖动，避免“惊群效应”。
 
-### Example Usage
+### 使用示例
 
-To use `BaseTaskWithRetry` for your task, simply set its `base` argument in the `@shared_task` decorator:
+将任务的 `base` 设置为 `BaseTaskWithRetry`：
 
 ```python
 from celery import shared_task
@@ -62,17 +62,17 @@ def my_retriable_task(self):
         raise self.retry(exc=e)
 ```
 
-## Calling Tasks
+## 调用任务
 
-Tasks can be called in a few ways:
+调用任务的常见方式：
 
-*   **Asynchronously (recommended for most cases):**
+*   **异步调用（推荐）：**
 
     ```python
     my_new_task.delay(arg1_value, arg2_value)
     ```
 
-*   **With more control (e.g., setting a countdown or ETA):**
+*   **带更多控制（倒计时或 ETA）：**
 
     ```python
     from datetime import datetime, timedelta
@@ -85,28 +85,28 @@ Tasks can be called in a few ways:
     my_new_task.apply_async((arg1_value, arg2_value), eta=eta_time)
     ```
 
-## Periodic Tasks
+## 周期任务
 
-Celery Beat is a scheduler that kicks off tasks periodically. In this project, periodic tasks are managed through the Django Admin interface.
+Celery Beat 用于周期性执行任务。本项目可通过 Django Admin 管理周期任务。
 
-### Steps to Configure a Periodic Task
+### 配置周期任务步骤
 
-1.  **Start Celery Worker**: Ensure your Celery worker is running:
+1.  **启动 Celery Worker**：
 
     ```bash
     poetry run worker
     ```
 
-2.  **Start Celery Beat**: Start the Celery Beat scheduler:
+2.  **启动 Celery Beat**：
 
     ```bash
     poetry run beat
     ```
 
-3.  **Configure in Django Admin**: Navigate to the Django Admin interface (`/admin-panel/`). Under the `DJANGO CELERY BEAT` section, you can add and manage `Periodic tasks`. You'll need to specify:
-    *   The task name (e.g., `apps.core.tasks.my_periodic_task`).
-    *   The schedule (e.g., every 5 minutes, daily, etc.).
-    *   Any arguments or keyword arguments for the task.
+3.  **在 Django Admin 配置**：访问 `/admin-panel/`，在 `DJANGO CELERY BEAT` 下新增与管理 `Periodic tasks`，指定：
+*   任务名称（如 `apps.core.tasks.my_periodic_task`）
+*   调度频率（每 5 分钟、每日等）
+*   任务参数或关键字参数
 
 ### Example Periodic Task
 

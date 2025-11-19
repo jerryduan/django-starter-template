@@ -1,44 +1,44 @@
-# Roo Code and Cline
+# Roo Code 与 Cline
 
-This page details the rules and best practices enforced by Cline for Django backend development within this project. For the full, up-to-date rules, please refer to the `.clinerules/django-backend-rules.md` file in the project root.
+本页说明 Cline 在本项目中针对 Django 后端开发的规则与最佳实践。完整最新规则请参考项目根目录的 `.clinerules/django-backend-rules.md`。
 
-## Brief overview
-This document outlines rules and best practices for Django backend development, covering framework usage, project structure, testing, and documentation.
+## 简要概览
+本文档概述 Django 后端开发的规则与最佳实践，涵盖框架使用、项目结构、测试与文档等。
 
-## Framework & Core Dependencies
-- Use Django 5.2+ with Django REST Framework for APIs
-- Default to PostgreSQL for database operations
-- Implement Redis caching for expensive operations
-- Use django-rest-knox for authentication
-- Document APIs using drf-spectacular
+## 框架与核心依赖
+- 使用 Django 5.2+ 与 DRF 构建 API
+- 数据库默认使用 PostgreSQL
+- 对昂贵操作使用 Redis 缓存
+- 使用 django-rest-knox 进行认证
+- 使用 drf-spectacular 记录 API 文档
 
-## Project Structure
-- Follow Django's recommended project layout strictly
-- Keep apps modular with single responsibilities
-- Place test files in each app's `tests` directory
-- Implement RESTful API patterns consistently
+## 项目结构
+- 严格遵循 Django 推荐的项目布局
+- 保持应用模块化与单一职责
+- 在每个应用的 `tests` 目录中放置测试文件
+- 一致地实现 RESTful API 模式
 
-## Development Practices
-- Strictly follow Django's security standards
-- Use DRF viewsets and serializers for all endpoints
-- Implement proper authentication with knox
-- Cache expensive operations using Redis
-- Document APIs with OpenAPI/Swagger via drf-spectacular
+## 开发实践
+- 严格遵循 Django 安全标准
+- 端点使用 DRF 的 viewsets 与 serializers
+- 使用 knox 实现正确的认证
+- 使用 Redis 缓存昂贵操作
+- 通过 drf-spectacular 以 OpenAPI/Swagger 记录接口
 
-## Testing Requirements
-- Write comprehensive unit tests for all features
-- Achieve minimum test coverage as specified
-- Include positive and negative test scenarios
-- Maintain test files alongside the code they test
+## 测试要求
+- 为所有功能编写全面的单元测试
+- 达到规定的最小覆盖率
+- 覆盖正向与异常场景
+- 测试文件与被测代码同目录维护
 
-## Documentation Standards
-- Include docstrings for all important classes/methods
-- Document API endpoints thoroughly
-- Keep documentation up-to-date with code changes
-- Reference official Django/DRF documentation
+## 文档标准
+- 为重要类/方法编写 docstring
+- 详细记录 API 端点
+- 文档随代码保持更新
+- 参考官方 Django/DRF 文档
 
-## Additional Guidelines
-- Prefer Django's built-in solutions over custom ones
-- Maintain backward compatibility when making changes
-- Validate all user input thoroughly
-- Implement proper error handling and logging
+## 其他指引
+- 优先使用 Django 原生方案
+- 变更时关注向后兼容性
+- 严格校验所有用户输入
+- 实现完备的错误处理与日志记录

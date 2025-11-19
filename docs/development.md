@@ -1,93 +1,91 @@
-# Development Workflow
+# 开发流程
 
-## Overview
+## 概览
 
-This guide outlines the essential commands and best practices for developing your application within the Django Starter Template. It assumes you have completed the initial environment setup, ideally using the provided Dev Container.
+本文档概述在 Django Starter Template 中进行开发的关键命令与最佳实践，建议在 Dev Container 环境下完成初始设置后再开始。
 
-## Core Development Commands
+## 核心开发命令
 
-The project provides a set of convenient `poetry run` commands to streamline common development tasks. These commands should be executed from your terminal within the VS Code Dev Container or your activated Poetry shell.
+项目通过 `pyproject.toml` 提供便捷的 `poetry run` 脚本，以简化常见的开发操作。建议在 VS Code Dev Container 或已激活的 Poetry Shell 中运行这些命令。
 
-The project includes convenient scripts in `pyproject.toml` to simplify common development tasks. You should use these `poetry run` commands from the terminal inside your VS Code dev container.
-
-| Command | Description |
+| 命令 | 说明 |
 | :--- | :--- |
-| `poetry run server` | Starts the Django development server. |
-| `poetry run makemigrations` | Creates new database migrations based on model changes. |
-| `poetry run migrate` | Applies pending database migrations. |
-| `poetry run test` | Runs the test suite using `pytest`. |
-| `poetry run test-cov`| Runs the test suite and generates a coverage report. |
+| `poetry run server` | 启动 Django 开发服务器 |
+| `poetry run makemigrations` | 根据模型变更生成迁移 |
+| `poetry run migrate` | 应用待处理的数据库迁移 |
+| `poetry run test` | 使用 `pytest` 运行测试套件 |
+| `poetry run test-cov`| 运行测试并生成覆盖率报告 |
 
-### Testing
+### 测试
 
-The project utilizes `pytest` for its test suite. Below are common commands for running tests and generating coverage reports:
+项目使用 `pytest` 进行测试。以下为常用命令：
 
-*   **Run all tests:**
+*   **运行全部测试：**
     ```bash
     poetry run pytest
     ```
-    Executes the entire test suite.
+    执行完整测试套件。
 
-*   **Run tests with coverage:**
+*   **带覆盖率运行测试：**
     ```bash
     poetry run pytest --cov
     ```
-    Runs all tests and collects code coverage information.
+    运行全部测试并收集覆盖率信息。
 
-*   **Generate an HTML coverage report:**
+*   **生成 HTML 覆盖率报告：**
     ```bash
     poetry run pytest --cov --cov-report=html
     ```
-    Generates a detailed HTML report of code coverage, which can be found in the `htmlcov/` directory. This report helps identify untested parts of the codebase.
+    生成详细的覆盖率 HTML 报告，位于 `htmlcov/` 目录。
 
-## Database Seeding
+## 数据库灌数据（Seeding）
 
-The template includes a powerful management command to populate your database with sample data, which is invaluable for development and testing. This command is part of the `apps/core/management/commands/seed.py` module.
+模板提供了用于填充示例数据的管理命令，适用于开发与测试。在 `apps/core/management/commands/seed.py`。
 
-**Usage:**
+**用法：**
 
 ```bash
-# Basic seeding with default options (creates 10 users)
+# 基本灌数据（默认创建 10 个用户）
 poetry run seed
 
-# Create a specific number of users
+# 创建指定数量的用户
 poetry run seed --users 20
 
-# Create a superuser (admin@admin.com:admin)
+# 创建超管（admin@admin.com:admin）
 poetry run seed --superuser
 
-# Clean existing data before seeding
+# 在灌数据前清理现有数据
 poetry run seed --clean
 
-# Combine options
+# 组合使用示例
 poetry run seed --users 50 --superuser --clean
 ```
 
-**Options:**
+**选项：**
 
-*   `--users <number>`: Specifies the number of regular users to create. Default is 10.
-*   `--superuser`: Creates a default superuser (`admin@admin.com` with password `admin`).
-*   `--clean`: Cleans (deletes) existing seeded data before generating new data. Use with caution as this will remove all existing users and related data.
+*   `--users <number>`：创建的普通用户数量，默认 10。
+*   `--superuser`：创建默认超管（`admin@admin.com` / `admin`）。
+*   `--clean`：在灌数据前清理已有数据（谨慎使用）。
 
-## Asynchronous Tasks (Celery)
+## 异步任务（Celery）
 
-For handling background tasks and asynchronous operations, the project integrates Celery. To run Celery workers and schedulers, use the following commands:
+项目集成 Celery 以处理后台与异步任务。使用以下命令运行：
 
-*   **Start the Celery worker:**
+*   **启动 Celery worker：**
     ```bash
     poetry run worker
     ```
-    This command starts a Celery worker process that executes tasks from the message queue.
+    启动 Celery worker 以消费队列中的任务。
 
-*   **Start the Celery beat scheduler:**
+*   **启动 Celery beat 调度：**
     ```bash
     poetry run beat
     ```
-    This command starts the Celery beat scheduler, which is responsible for periodically executing scheduled tasks.
+    启动 Celery beat，负责定时调度周期任务。
 
-## Environment Variables
+## 环境变量
 
-Environment variables are managed using a `.env` file, which is crucial for configuring application settings without hardcoding sensitive information. The project uses `django-environ` to load these variables.
+项目使用 `.env` 管理环境变量，以避免在代码中硬编码敏感信息，并通过 `django-environ` 加载。
 
-*   **Development `.env` file:** The `poetry run create_dev_env` command can be used to generate a new `.env` file tailored for development purposes if it's missing or needs to be reset.
-*   **Production `.env` file:** For production deployments, refer to the `.env.example` file at the project root for a comprehensive list of all required environment variables and their descriptions. This file serves as a template for setting up your production environment.
+*   **开发环境 `.env`：** 使用 `poetry run create_dev_env` 生成开发用 `.env`。
+*   **生产环境 `.env`：** 参考项目根目录的 `.env.example`，根据说明配置实际变量。

@@ -1,12 +1,12 @@
-# Testing
+# 测试
 
-This project uses `pytest` as its primary testing framework, integrated with `pytest-django` for seamless Django testing and `pytest-cov` for code coverage analysis. This setup ensures a robust and efficient testing environment.
+项目以 `pytest` 作为主要测试框架，结合 `pytest-django` 进行 Django 测试，并通过 `pytest-cov` 实现覆盖率统计，提供稳健高效的测试环境。
 
-## Testing Setup
+## 测试配置
 
-### `pytest.ini` Configuration
+### `pytest.ini` 配置
 
-The `pytest.ini` file in the project root configures `pytest` behavior:
+项目根目录的 `pytest.ini` 用于配置 `pytest` 行为：
 
 ```ini
 [pytest]
@@ -16,72 +16,72 @@ python_files = tests.py test_*.py *_tests.py
 addopts = --reuse-db --nomigrations --cov=. --cov-report=html --cov-report=term-missing --no-cov-on-fail
 ```
 
-*   `DJANGO_SETTINGS_MODULE = conf.test_settings`: Specifies that `conf.test_settings.py` should be used for running tests. This file typically contains settings optimized for testing (e.g., using an in-memory database).
-*   `python_files = tests.py test_*.py *_tests.py`: Defines the naming conventions for test files that `pytest` should discover.
-*   `addopts`: Additional command-line options that are always passed to `pytest`:
-    *   `--reuse-db`: Reuses the test database between test runs, significantly speeding up subsequent test executions.
-    *   `--nomigrations`: Prevents Django from running migrations during tests, assuming your test database schema is up-to-date.
-    *   `--cov=.`: Enables code coverage analysis for the entire project.
-    *   `--cov-report=html`: Generates an HTML report for code coverage, providing a visual breakdown of covered and uncovered lines.
-    *   `--cov-report=term-missing`: Displays missing coverage information directly in the terminal.
-    *   `--no-cov-on-fail`: Prevents coverage reporting if tests fail.
+*   `DJANGO_SETTINGS_MODULE = conf.test_settings`：使用专用测试设置文件。
+*   `python_files = tests.py test_*.py *_tests.py`：测试文件发现规则。
+*   `addopts`：常用选项：
+    *   `--reuse-db`：复用测试数据库，加速后续运行。
+    *   `--nomigrations`：测试时跳过迁移。
+    *   `--cov=.`：启用覆盖率统计。
+    *   `--cov-report=html`：生成覆盖率 HTML 报告。
+    *   `--cov-report=term-missing`：终端显示缺失覆盖信息。
+    *   `--no-cov-on-fail`：失败时不输出覆盖率。
 
-### Test File Organization
+### 测试文件组织
 
-Tests are organized by application within `tests/` directories. For example, tests for the `users` app are located in `apps/users/tests/`.
+测试按应用分布在各自的 `tests/` 目录，如 `apps/users/tests/`。
 
-*   `apps/core/tests/`: Contains tests for core functionalities.
-*   `apps/users/tests/`: Contains tests for user management and authentication.
+*   `apps/core/tests/`：核心功能测试
+*   `apps/users/tests/`：用户与认证测试
 
 This structure keeps tests co-located with the code they test, making it easier to find and maintain them.
 
-## Running Tests
+## 运行测试
 
-To run tests, use the `poetry run pytest` command. The `pytest.ini` configuration will automatically apply the necessary options.
+运行测试可使用 `poetry run pytest`，`pytest.ini` 将自动生效。
 
-### Basic Test Run
+### 基本运行
 
-To run all tests:
+运行全部测试：
 
 ```bash
 poetry run pytest
 ```
 
-### Running Tests with Coverage
+### 覆盖率统计
 
-To run tests and generate a code coverage report:
+运行测试并生成覆盖率报告：
 
 ```bash
 poetry run pytest --cov
 ```
 
-This will output a summary of code coverage in the terminal. To generate a detailed HTML report (which you can open in your browser for a visual representation of coverage):
+终端会输出覆盖率摘要；如需详细的 HTML 报告：
 
 ```bash
 poetry run pytest --cov --cov-report=html
 ```
 
-The HTML report will be generated in the `htmlcov/` directory in your project root.
+HTML 报告位于项目根目录 `htmlcov/`。
 
-### Running Specific Tests
+### 运行指定测试
 
-You can run specific test files or even individual test functions:
+支持运行特定测试文件或函数：
 
-*   **Run tests in a specific file:**
+*   **运行某个文件：**
 
     ```bash
     poetry run pytest apps/users/tests/test_user_model.py
     ```
 
-*   **Run a specific test function:**
+*   **运行某个测试函数：**
 
     ```bash
     poetry run pytest apps/users/tests/test_user_model.py::test_create_user
     ```
 
-## Best Practices
+## 最佳实践
 
-*   **Test Coverage**: Aim for high test coverage, especially for critical business logic and API endpoints. The `--cov` option helps you track this.
-*   **Fixtures**: Utilize `pytest` fixtures to set up common test data and environments, promoting reusability and reducing boilerplate code.
-*   **Clear Naming**: Name your test files and functions clearly (e.g., `test_feature_name.py`, `test_function_behavior`) to make it easy to understand what each test covers.
-*   **Isolation**: Ensure your tests are isolated and do not depend on the state of previous tests. Use `pytest-django`'s transactional test cases or database cleanup mechanisms.
+*   **覆盖率**：关注关键逻辑与接口的覆盖率。
+*   **Fixtures**：使用 fixtures 复用准备数据与环境。
+*   **命名清晰**：如 `test_feature_name.py`、`test_function_behavior`。
+*   **隔离性**：测试互不依赖，使用事务或清理机制。

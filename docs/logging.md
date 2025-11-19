@@ -1,36 +1,31 @@
-# Logging System
+# 日志系统
 
-This section details the logging system implemented in the Django Starter Template, covering its configuration, features, and how to interpret the generated logs.
+本节介绍项目的日志系统，包括配置、特性与如何理解日志内容。
 
-## Overview
+## 概览
 
-The template utilizes a centralized logging system configured within `conf/settings.py`. It's designed to provide comprehensive and structured logs, making it easier to monitor, debug, and analyze application behavior, especially in production environments.
+日志系统在 `conf/settings.py` 统一配置，输出结构化且全面的日志，便于监控、调试与分析，尤其适合生产环境。
 
-## Key Features
+## 关键特性
 
-*   **JSON Format**: All logs are formatted as JSON, enabling easy parsing and integration with log management tools.
-*   **Multiple Handlers**: Different types of logs are directed to specific handlers and files:
-    *   `console`: Outputs logs to the console, primarily used during development.
-    *   `app.log`: General application logs.
-    *   `security.log`: Specifically captures authentication events and security-related messages.
-    *   `error.log`: Records all error-level messages.
-    *   `info.log`: Records all info-level messages.
-*   **Rotating Files**: To prevent log files from growing indefinitely, they are configured to rotate. Each log file has a maximum size of 10MB, and up to 5 backup files are kept.
-*   **Request Tracing**: A custom middleware (`apps.core.middleware.RequestIDMiddleware`) assigns a unique `request_id` to each incoming request. This ID, along with other request-specific details (client IP, request path, authenticated user ID, response time, and HTTP status code), is automatically injected into every log record. This allows for end-to-end tracing of requests.
-*   **Sentry Integration**: In production environments, Sentry is integrated for advanced error tracking and performance monitoring.
+*   **JSON 格式**：日志使用 JSON 格式，易于解析与接入日志平台。
+*   **多处理器与文件**：按类型分别输出到 `console`、`app.log`、`security.log`、`error.log`、`info.log`。
+*   **文件轮转**：单文件最大 10MB，保留 5 个备份，避免无限增长。
+*   **请求追踪**：`RequestIDMiddleware` 为每次请求注入 `request_id`、客户端 IP、请求路径、用户 ID、响应时间与状态码。
+*   **Sentry 集成**：生产环境启用 Sentry 进行错误与性能监控。
 
-## Log File Locations
+## 日志位置
 
-All log files are stored in the `logs/` directory at the root of the project:
+日志位于项目根目录的 `logs/`：
 
-*   `logs/app.log`: General application logs.
-*   `logs/security.log`: Authentication and security events.
-*   `logs/error.log`: Error-level logs.
-*   `logs/info.log`: Info-level logs.
+*   `logs/app.log`：通用应用日志
+*   `logs/security.log`：认证与安全事件
+*   `logs/error.log`：错误日志
+*   `logs/info.log`：信息级日志
 
-## Example Log Entry
+## 日志示例
 
-Log entries are in JSON format, providing rich context for each event. Here's an example:
+日志为 JSON 格式，包含丰富上下文信息：
 
 ```json
 {
@@ -49,17 +44,17 @@ Log entries are in JSON format, providing rich context for each event. Here's an
 }
 ```
 
-Each field in the JSON provides specific information:
+各字段含义：
 
-*   `asctime`: Timestamp of the log entry.
-*   `levelname`: The logging level (e.g., INFO, WARNING, ERROR).
-*   `module`: The Python module where the log originated.
-*   `process`: The process ID.
-*   `thread`: The thread ID.
-*   `message`: The actual log message.
-*   `client`: The IP address of the client making the request.
-*   `request_id`: A unique identifier for the request, useful for tracing.
-*   `path`: The URL path of the request.
-*   `user_id`: The ID of the authenticated user (or "anonymous" if not authenticated).
-*   `status_code`: The HTTP status code of the response.
-*   `response_time`: The time taken to process the request in seconds.
+*   `asctime`：时间戳
+*   `levelname`：日志级别
+*   `module`：模块名
+*   `process`：进程 ID
+*   `thread`：线程 ID
+*   `message`：日志消息
+*   `client`：客户端 IP
+*   `request_id`：请求唯一 ID
+*   `path`：请求路径
+*   `user_id`：用户 ID（未认证为 anonymous）
+*   `status_code`：响应状态码
+*   `response_time`：处理耗时（秒）

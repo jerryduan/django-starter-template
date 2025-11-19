@@ -1,20 +1,20 @@
-# Rate Limiting
+# 速率限制（Rate Limiting）
 
-Rate limiting is a crucial security and performance feature that controls the number of requests a user or IP address can make to your API within a given timeframe. It helps prevent abuse, brute-force attacks, and ensures fair usage of your API resources.
+速率限制用于控制用户或 IP 在一定时间窗口内的请求次数，有助于防止滥用、暴力破解，并保障资源的公平使用与服务稳定性。
 
-## Why Use Rate Limiting?
+## 为什么需要速率限制？
 
-*   **Security**: Protects against brute-force attacks on login endpoints, denial-of-service (DoS) attacks, and excessive data scraping.
-*   **Performance**: Prevents a single user or malicious actor from overwhelming your server with too many requests, ensuring the API remains responsive for all legitimate users.
-*   **Fair Usage**: Ensures that API resources are distributed fairly among all users, preventing any single user from monopolizing resources.
+*   **安全**：抵御登录暴力破解、DoS、过度爬取。
+*   **性能**：避免单个用户或恶意行为造成过载。
+*   **公平使用**：防止资源被个别用户垄断。
 
-## How it's Implemented
+## 实现方式
 
-This project uses Django REST Framework's built-in throttling mechanisms, along with a custom throttle class, to implement rate limiting.
+项目使用 DRF 内置的节流机制与自定义节流类实现速率限制。
 
-### 1. Default Throttle Rates
+### 1. 默认速率
 
-Global throttle rates are defined in `conf/settings.py` under the `REST_FRAMEWORK` dictionary. These rates are applied based on different scopes:
+全局速率在 `conf/settings.py` 的 `REST_FRAMEWORK` 中定义，按不同 scope 生效：
 
 ```python
 # Example from conf/settings.py
@@ -28,13 +28,13 @@ REST_FRAMEWORK = {
 }
 ```
 
-*   `user`: Applies to authenticated users. **Default:** `1000 requests per day`.
-*   `anon`: Applies to unauthenticated (anonymous) users. **Default:** `100 requests per day`.
-*   `user_login`: A custom scope specifically for login attempts. **Default:** `5 requests per minute`.
+*   `user`：认证用户，默认 `1000/day`
+*   `anon`：匿名用户，默认 `100/day`
+*   `user_login`：登录尝试，默认 `5/minute`
 
-### 2. Custom Throttle Class
+### 2. 自定义节流类
 
-For specific scenarios, like limiting login attempts, a custom throttle class (`apps/users/throttles.py`) is used. This allows for more granular control over how requests are identified and limited.
+针对登录尝试等场景，使用自定义节流类（`apps/users/throttles.py`）实现更细粒度的限流标识与策略。
 
 ```python
 # Example from apps/users/throttles.py
@@ -52,14 +52,14 @@ class UserLoginRateThrottle(SimpleRateThrottle):
         return self.cache_format % {"scope": self.scope, "ident": ident}
 ```
 
-This custom throttle ensures that:
+该节流类确保：
 
-*   For anonymous users, rate limiting is based on their IP address.
-*   For authenticated users, rate limiting is based on their user ID.
+*   匿名用户按 IP 限流
+*   已认证用户按用户 ID 限流
 
-### 3. Applying Throttles to Views
+### 3. 在视图中应用节流
 
-Throttles are applied to DRF views using the `throttle_classes` attribute. This tells DRF which throttle policies to enforce for that specific view.
+通过 `throttle_classes` 将节流策略应用到 DRF 视图。
 
 **Example (from `apps/users/views.py` for `LoginView` and `UserProfileView`):**
 
@@ -84,14 +84,14 @@ class CreateUserView(generics.CreateAPIView):
     throttle_classes = [throttling.UserRateThrottle]
 ```
 
-*   `UserLoginRateThrottle`: Applied to the `LoginView` to limit login attempts.
-*   `throttling.UserRateThrottle`: A built-in DRF throttle that applies the `user` scope rate (from `DEFAULT_THROTTLE_RATES`) to authenticated users. This is used for `UserProfileView` and `CreateUserView`.
+*   `UserLoginRateThrottle`：用于 `LoginView` 控制登录尝试频率。
+*   `throttling.UserRateThrottle`：用于认证用户的通用速率（`UserProfileView`、`CreateUserView`）。
 
-## How to Configure
+## 配置方法
 
-To adjust the rate limits for your API, modify the `DEFAULT_THROTTLE_RATES` dictionary in `conf/settings.py`.
+在 `conf/settings.py` 的 `DEFAULT_THROTTLE_RATES` 中修改限流策略即可。
 
-For example, to change the anonymous user rate limit to 50 requests per hour:
+例如，将匿名用户限流改为每小时 50 次：
 
 ```python
 # In conf/settings.py

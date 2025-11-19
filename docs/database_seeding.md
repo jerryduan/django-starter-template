@@ -1,63 +1,60 @@
-# Database Seeding
+# 数据库灌数据（Seeding）
 
-Database seeding is the process of populating a database with initial data. This is particularly useful during development and testing phases to ensure your application has realistic data to work with, without having to manually create it.
+数据库灌数据指向数据库填充初始或示例数据。在开发与测试阶段尤为有用，可快速获得真实感数据而无需手动录入。
 
-## Why Use Database Seeding?
+## 为什么需要灌数据？
 
-*   **Development**: Provides a quick way to set up a development environment with sample data, allowing developers to immediately start working on features without worrying about data entry.
-*   **Testing**: Ensures that your tests run against a consistent and representative dataset, making your tests more reliable and reproducible.
-*   **Demonstrations**: Useful for populating a database for demonstrations or presentations of your application.
+*   **开发**：快速搭建带示例数据的环境，立即进入功能开发。
+*   **测试**：保证测试基于一致且具代表性的数据集，提高可靠性与可复现性。
+*   **演示**：方便准备演示或展示用数据。
 
-## The `seed` Management Command
+## `seed` 管理命令
 
-This project includes a powerful custom Django management command, `seed`, located at `apps/core/management/commands/seed.py`. This command allows you to easily populate your database with sample user data.
+项目提供自定义管理命令 `seed`（路径：`apps/core/management/commands/seed.py`），用于快速填充示例用户数据。
 
-### Usage
+### 用法
 
-To use the `seed` command, you typically run it via `python manage.py seed` or `poetry run seed`.
+通过 `python manage.py seed` 或 `poetry run seed` 运行。
 
 ```bash
 python manage.py seed [options]
 ```
 
-### Available Options
+### 可用参数
 
 The `seed` command supports the following arguments:
 
-*   `--users <count>`: Specifies the number of fake users to create. If not provided, it defaults to 10 users.
+*   `--users <count>`：创建的假用户数量，默认 10。
+    *   **示例：** `python manage.py seed --users 50`
 
-    *   **Example:** `python manage.py seed --users 50` (Creates 50 fake users)
+*   `--superuser`：创建默认超管（`admin@admin.com` / `admin`）。
+    *   **示例：** `python manage.py seed --superuser`
 
-*   `--superuser`: A flag that, when present, creates a superuser with predefined credentials (`admin@admin.com` / `admin`).
+*   `--clean`：在灌数据前删除现有（非超管）用户数据，适合从空数据集开始。
+    *   **示例：** `python manage.py seed --clean`
 
-    *   **Example:** `python manage.py seed --superuser` (Creates an admin user)
-
-*   `--clean`: A flag that, when present, deletes all existing non-superuser user data from the database before seeding. This is useful for starting with a fresh dataset.
-
-    *   **Example:** `python manage.py seed --clean` (Deletes existing data before seeding)
-
-### Combined Examples
+### 组合示例
 
 You can combine these options to achieve specific seeding scenarios:
 
-*   **Basic seeding with default options (creates 10 users):**
+*   **基本灌数据（创建 10 用户）：**
 
     ```bash
     python manage.py seed
     ```
 
-*   **Create specific number of users and a superuser:**
+*   **创建指定数量用户并添加超管：**
 
     ```bash
     python manage.py seed --users 20 --superuser
     ```
 
-*   **Clean existing data, create 50 users, and a superuser:**
+*   **清理数据，创建 50 用户并添加超管：**
 
     ```bash
     python manage.py seed --users 50 --superuser --clean
     ```
 
-## Implementation Details
+## 实现细节
 
-The `seed` command uses the `Faker` library to generate realistic-looking fake data for user profiles. It also utilizes Django's `transaction.atomic` decorator to ensure that the seeding process is atomic; if any part of the seeding fails, the entire operation is rolled back, preventing partial data corruption.
+`seed` 命令使用 `Faker` 生成逼真的假数据，并通过 `transaction.atomic` 保证灌数据过程的原子性：任一步骤失败将回滚，避免产生不一致数据。

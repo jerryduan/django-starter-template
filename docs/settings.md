@@ -1,14 +1,14 @@
-# Project Settings
+# 项目设置
 
-## Overview
+## 概览
 
-This document provides a comprehensive guide to the `conf/settings.py` file, which centralizes the configuration for the Django Starter Template. Understanding these settings is crucial for customizing and deploying your application effectively. The settings are organized into logical sections to facilitate navigation and comprehension.
+本文档全面介绍 `conf/settings.py` 中的项目配置。理解这些设置有助于按需定制与正确部署应用。内容按逻辑分区组织，便于查阅。
 
-## Environment Variables
+## 环境变量
 
-The project leverages `django-environ` to manage environment variables, ensuring that sensitive information and deployment-specific configurations are kept out of version control. Variables are loaded from a `.env` file located in the project root.
+项目使用 `django-environ` 读取位于项目根目录的 `.env` 文件，以便将敏感信息与环境配置从版本库中隔离。
 
-**Configuration Snippet:**
+**示例代码：**
 
 ```python
 import environ
@@ -18,186 +18,185 @@ root_path = environ.Path(__file__) - 2
 env.read_env(str(root_path.path(".env")))
 ```
 
-**Explanation:**
+**说明：**
 
-*   `env = environ.Env()`: Initializes the environment reader, which provides methods to access environment variables with type casting.
-*   `root_path`: Defines the base directory for resolving relative paths within the project. It's calculated as two levels up from the `settings.py` file's location.
-*   `env.read_env()`: Reads variables from the `.env` file. When called without arguments, it automatically searches for a `.env` file in the current working directory or its parent directories.
+*   `env = environ.Env()`：初始化环境读取器，支持类型转换。
+*   `root_path`：用于解析项目内相对路径，定位到 `settings.py` 的上两级。
+*   `env.read_env()`：读取根目录 `.env` 变量。
 
-## Basic Configuration
+## 基础配置
 
-These are fundamental Django settings that define the core behavior of the application:
+以下为应用核心行为相关的基础设置：
 
-*   `ROOT_URLCONF`: Specifies the root URL configuration module for the project. **Default:** `conf.urls`. This tells Django where to find the main URL patterns that route incoming requests.
-*   `WSGI_APPLICATION`: The full Python path to the WSGI application object. **Default:** `conf.wsgi.application`. This is the entry point for WSGI-compatible web servers (e.g., Gunicorn) to serve the Django application.
-*   `DEBUG`: A boolean that controls Django's debug mode. **Default:** `False` (loaded from `env.bool("DEBUG", default=False)`). When `True`, Django provides detailed error pages, automatically reloads code on changes, and enables other development-specific features. **It is critical to set this to `False` in production environments for security and performance reasons.**
+*   `ROOT_URLCONF`：根 URL 配置模块。默认 `conf.urls`。
+*   `WSGI_APPLICATION`：WSGI 入口。默认 `conf.wsgi.application`。
+*   `DEBUG`：调试模式。默认 `False`；生产务必关闭以保障安全与性能。
 
-## Time & Language
+## 时间与语言
 
 These settings control the localization and time zone behavior of the Django application:
 
-*   `LANGUAGE_CODE`: The language code for this Django installation. **Default:** `en-us`. This setting influences the default language for Django's built-in messages, forms, and templates.
-*   `TIME_ZONE`: The time zone for this installation. **Default:** `UTC`. Django uses this time zone for all datetime objects unless a specific timezone is explicitly activated (e.g., for a user's local time).
-*   `USE_I18N`: A boolean that determines whether Django's internationalization system should be enabled. **Default:** `True`. When `True`, Django will look for translation files to provide localized content.
-*   `USE_TZ`: A boolean that specifies whether Django's timezone support should be enabled. **Default:** `True`. When `True`, Django stores datetimes in UTC in the database and converts them to the appropriate local time zone for display, based on `TIME_ZONE` or user-specific settings.
+*   `LANGUAGE_CODE`：语言代码，默认 `en-us`。
+*   `TIME_ZONE`：时区，默认 `UTC`。
+*   `USE_I18N`：国际化开关，默认 `True`。
+*   `USE_TZ`：时区支持，默认 `True`（数据库存 UTC，展示按时区转换）。
 
-## Security and Users
+## 安全与用户
 
 This section covers critical security configurations and user model settings, essential for protecting your application and managing user accounts:
 
-*   `SECRET_KEY`: A unique secret key used for cryptographic signing in Django. **Default:** Loaded from the `DJANGO_SECRET_KEY` environment variable. **This key must be kept absolutely secret and never hardcoded in version control.**
+*   `SECRET_KEY`：密钥，从 `DJANGO_SECRET_KEY` 环境变量读取，严禁泄露或硬编码。
 
     ```python
     SECRET_KEY = env("DJANGO_SECRET_KEY")
     ```
 
-*   `ALLOWED_HOSTS`: A list of strings representing the host/domain names that this Django site can serve. **Default:** `["*"]` (loaded from `env.list("ALLOWED_HOSTS", default=["*"])`). This is a crucial security measure to prevent HTTP Host header attacks. **In production, always specify your exact domain names (e.g., `["api.example.com"]`) and never use `"*"` for security reasons.**
+*   `ALLOWED_HOSTS`：允许的域名列表。默认 `[*]`，生产环境需明确域名。
 
     ```python
     ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
     ```
 
-*   `AUTH_USER_MODEL`: Specifies the custom user model to be used by Django's authentication system. **Default:** `users.CustomUser`. This allows for extending Django's default user model with custom fields and behaviors tailored to your application's needs.
-*   `MIN_PASSWORD_LENGTH`: Defines the minimum length required for user passwords. **Default:** `8` (loaded from `env.int("MIN_PASSWORD_LENGTH", default=8)`). This setting is integrated with Django's password validation system to enforce stronger password policies.
-*   `PASSWORD_HASHERS`: A list of password hashing algorithms used for storing user passwords. Django attempts to use them in the order specified. **Default:** Includes `ScryptPasswordHasher`, `PBKDF2PasswordHasher`, `PBKDF2SHA1PasswordHasher`, `Argon2PasswordHasher`, and `BCryptSHA256PasswordHasher`. This provides robust password security by using modern, secure hashing algorithms.
-*   `AUTH_PASSWORD_VALIDATORS`: Configures the rules for password validation. **Default:** Includes validators for user attribute similarity, minimum length, common passwords, and numeric passwords. These can be customized to enforce more stringent password policies.
+*   `AUTH_USER_MODEL`：自定义用户模型，默认 `users.CustomUser`（邮箱登录）。
+*   `MIN_PASSWORD_LENGTH`：密码最小长度，默认 `8`。
+*   `PASSWORD_HASHERS`：密码哈希算法列表，启用多种现代安全算法。
+*   `AUTH_PASSWORD_VALIDATORS`：密码校验器集合，可按需加强策略。
 
-### Security Headers
+### 安全头部
 
 These settings configure various HTTP security headers to protect against common web vulnerabilities:
 
-*   `SECURE_BROWSER_XSS_FILTER`: Enables the `X-XSS-Protection` header. **Default:** `True`. This helps protect against Cross-Site Scripting (XSS) attacks by enabling the browser's built-in XSS filter.
-*   `SECURE_CONTENT_TYPE_NOSNIFF`: Enables the `X-Content-Type-Options` header. **Default:** `True`. This prevents browsers from MIME-sniffing a response away from the declared `Content-Type`, mitigating certain types of attacks.
-*   `X_FRAME_OPTIONS`: Controls the `X-Frame-Options` header to prevent clickjacking attacks. **Default:** `DENY`. This means the page cannot be displayed in a frame, iframe, or object tag.
-*   `CSRF_COOKIE_SECURE`: A boolean that determines whether the CSRF cookie should only be sent over HTTPS. **Default:** `True` if `DEBUG` is `False`, `False` otherwise. **This should always be `True` in production environments to prevent cookie interception.**
-*   `SESSION_COOKIE_SECURE`: A boolean that determines whether the session cookie should only be sent over HTTPS. **Default:** `True` if `DEBUG` is `False`, `False` otherwise. **Similar to `CSRF_COOKIE_SECURE`, this must be `True` in production for secure session management.**
+*   `SECURE_BROWSER_XSS_FILTER`：开启浏览器 XSS 保护。
+*   `SECURE_CONTENT_TYPE_NOSNIFF`：禁止 MIME 嗅探。
+*   `X_FRAME_OPTIONS`：点击劫持防护，默认 `DENY`。
+*   `CSRF_COOKIE_SECURE`：仅 HTTPS 发送 CSRF Cookie（生产应开启）。
+*   `SESSION_COOKIE_SECURE`：仅 HTTPS 发送会话 Cookie（生产应开启）。
 
-## Databases
+## 数据库
 
 Database connection settings are managed through the `DATABASE_URL` environment variable, which `django-environ` parses to configure the database connection.
 
-**Configuration Snippet:**
+**示例代码：**
 
 ```python
 DJANGO_DATABASE_URL = env.db("DATABASE_URL")
 DATABASES = {"default": DJANGO_DATABASE_URL}
 ```
 
-**Explanation:**
+**说明：**
 
-*   `DJANGO_DATABASE_URL`: This variable holds the database connection string, which is parsed by `django-environ` to extract database credentials and settings. **Default:** Loaded from the `DATABASE_URL` environment variable.
-*   `DATABASES`: A dictionary that contains all database configurations for the project. The `default` key specifies the primary database connection used by the application.
-*   `DEFAULT_AUTO_FIELD`: Defines the type of primary key to use for models that do not explicitly specify one. **Default:** `django.db.models.BigAutoField`. This uses a 64-bit integer, which is generally preferred over the default `AutoField` (32-bit) to prevent potential integer overflow issues in large-scale applications.
+*   `DJANGO_DATABASE_URL`：数据库连接字符串，从 `DATABASE_URL` 加载。
+*   `DATABASES`：数据库配置字典，`default` 为主库。
+*   `DEFAULT_AUTO_FIELD`：默认主键类型，使用 64 位 `BigAutoField`。
 
-## Applications Configuration
+## 应用与中间件
 
 This section details the configuration of installed Django applications and middleware, which are crucial for defining the project's functionalities and request-response processing flow:
 
-*   `INSTALLED_APPS`: A list of strings specifying all Django applications enabled in this project. **Default:** This includes Django's built-in applications (e.g., `django.contrib.admin`, `django.contrib.auth`), essential third-party libraries (e.g., `whitenoise`, `rest_framework`, `knox`, `drf_spectacular`), and the project's local applications (`apps.users`, `apps.core`). This setting informs Django which application modules are active and should be loaded.
+*   `INSTALLED_APPS`：启用的 Django 应用列表（内置、第三方与本地应用）。
+*   `MIDDLEWARE`：请求/响应全局处理链，顺序十分重要（含安全、中间件、CORS、认证、自定义 `RequestIDMiddleware` 等）。
 
-*   `MIDDLEWARE`: A list of middleware classes that process requests and responses globally across your Django application. **Default:** This typically includes security middleware, static files handling, session management, CORS headers, common utilities, CSRF protection, authentication, and custom middleware like `RequestIDMiddleware`. The order of middleware is critically important, as they are executed sequentially for incoming requests and in reverse order for outgoing responses.
-
-## Templates
+## 模板
 
 These settings configure Django's template engine, which is responsible for rendering HTML and other content:
 
-*   `BACKEND`: Specifies the template engine to be used. **Default:** `django.template.backends.django.DjangoTemplates`.
-*   `DIRS`: A list of absolute paths to directories where Django should search for template files. **Default:** `[root_path("templates")]`. This allows for project-wide templates to be organized outside of individual application directories.
-*   `APP_DIRS`: A boolean that instructs Django to look for templates within the `templates` subdirectory of installed applications. **Default:** `True`. This is a convenient way to organize app-specific templates alongside their respective applications.
-*   `OPTIONS`: A dictionary of additional options for the template engine. **Default:** Includes `context_processors` (functions that add variables to the template context, such as `debug`, `request`, `auth`, `messages`) and `builtins` (which register built-in template tags and filters for use in templates).
+*   `BACKEND`：模板引擎，默认 `DjangoTemplates`。
+*   `DIRS`：模板搜索路径，默认 `[root_path("templates")]`。
+*   `APP_DIRS`：开启应用内 `templates/` 搜索，默认 `True`。
+*   `OPTIONS`：上下文处理器与内置过滤器等配置。
 
 ## REST Framework
 
 This section details the settings for Django REST Framework (DRF) and related tools for API development, authentication, and schema generation.
 
-### Token-Based Authentication
+### 基于 Token 的认证
 
 Configuration for `django-rest-knox`, the token-based authentication system used for secure API access:
 
-*   `SECURE_HASH_ALGORITHM`: The hashing algorithm employed for generating and verifying authentication tokens. **Default:** `hashlib.sha512`.
-*   `AUTH_TOKEN_CHARACTER_LENGTH`: Defines the length of the generated authentication tokens. **Default:** `64`.
-*   `TOKEN_TTL`: Sets the time-to-live (TTL) for authentication tokens, determining how long a token remains valid after issuance. **Default:** `timedelta(hours=10)`.
-*   `USER_SERIALIZER`: Specifies the serializer class used for user profiles when returning user-related data with tokens. **Default:** `apps.users.serializers.UserProfileSerializer`.
-*   `TOKEN_LIMIT_PER_USER`: Allows limiting the number of active tokens a single user can possess simultaneously. **Default:** `None` (no limit).
-*   `AUTO_REFRESH`: A boolean indicating whether tokens should be automatically refreshed upon use, extending their validity. **Default:** `False`.
-*   `AUTO_REFRESH_MAX_TTL`: The maximum time-to-live for tokens that are automatically refreshed. **Default:** `None`.
-*   `MIN_REFRESH_INTERVAL`: The minimum time interval (in seconds) that must pass between token refreshes. **Default:** `60` seconds.
-*   `AUTH_HEADER_PREFIX`: The prefix expected in the `Authorization` HTTP header for token authentication (e.g., `Bearer <token>`). **Default:** `Bearer`.
-*   `TOKEN_MODEL`: Refers to the Django model used by `django-rest-knox` to store authentication tokens. **Default:** `knox.AuthToken`.
+*   `SECURE_HASH_ALGORITHM`：Token 哈希算法，默认 `hashlib.sha512`。
+*   `AUTH_TOKEN_CHARACTER_LENGTH`：令牌长度，默认 `64`。
+*   `TOKEN_TTL`：令牌有效期，默认 `10 小时`。
+*   `USER_SERIALIZER`：用户序列化器，默认 `apps.users.serializers.UserProfileSerializer`。
+*   `TOKEN_LIMIT_PER_USER`：每用户令牌数量限制，默认不限制。
+*   `AUTO_REFRESH`：是否自动刷新令牌，默认 `False`。
+*   `AUTO_REFRESH_MAX_TTL`：自动刷新后的最大 TTL，默认 `None`。
+*   `MIN_REFRESH_INTERVAL`：两次刷新最小间隔（秒），默认 `60`。
+*   `AUTH_HEADER_PREFIX`：认证头前缀，默认 `Bearer`。
+*   `TOKEN_MODEL`：Knox 令牌模型，默认 `knox.AuthToken`。
 
-### General DRF Settings
+### DRF 通用设置
 
 Core settings for Django REST Framework, influencing how APIs behave, including authentication, filtering, and rendering:
 
-*   `DEFAULT_AUTHENTICATION_CLASSES`: Defines the authentication methods available for API endpoints. **Default:** `knox.auth.TokenAuthentication`. In `DEBUG` mode, `SessionAuthentication` and `BasicAuthentication` are also included for development convenience.
-*   `DEFAULT_FILTER_BACKENDS`: Specifies the default filter backends used for enabling filtering, searching, and ordering capabilities on API list views. **Default:** `django_filters.rest_framework.DjangoFilterBackend`, `rest_framework.filters.SearchFilter`, `rest_framework.filters.OrderingFilter`.
-*   `DEFAULT_RENDERER_CLASSES`: Determines how API responses are rendered. **Default:** `rest_framework.renderers.JSONRenderer`. In `DEBUG` mode, `BrowsableAPIRenderer` is also added, providing a user-friendly HTML interface for API interaction.
-*   `DEFAULT_SCHEMA_CLASS`: Integrates `drf-spectacular` for automatic OpenAPI schema generation. **Default:** `drf_spectacular.openapi.AutoSchema`.
-*   `DEFAULT_THROTTLE_RATES`: Configures rate limiting for different types of users or requests, helping to prevent API abuse. **Default:** `user: "1000/day"` (authenticated users), `anon: "100/day"` (unauthenticated users), `user_login: "5/minute"` (specific throttle for login attempts).
+*   `DEFAULT_AUTHENTICATION_CLASSES`：默认认证方式；`DEBUG` 模式下附带会话与基础认证。
+*   `DEFAULT_FILTER_BACKENDS`：默认过滤、搜索与排序后端。
+*   `DEFAULT_RENDERER_CLASSES`：默认渲染器；`DEBUG` 模式下启用可浏览 API。
+*   `DEFAULT_SCHEMA_CLASS`：OpenAPI Schema 生成类。
+*   `DEFAULT_THROTTLE_RATES`：速率限制配置。
 
-### OpenAPI Schema Generation
+### OpenAPI 文档生成
 Settings for `drf-spectacular`, which generates OpenAPI 3 documentation for your API:
 
-*   `TITLE`: The title displayed in your API documentation. **Default:** `Django Starter Template`.
-*   `DESCRIPTION`: A brief description of your API, providing context for users of the documentation. **Default:** `A comprehensive starting point for your new API with Django and DRF`.
-*   `VERSION`: The version number of your API. **Default:** `0.1.0`.
-*   `SERVE_INCLUDE_SCHEMA`: A boolean indicating whether the raw OpenAPI schema endpoint should be included in the generated documentation. **Default:** `False`. Set to `True` if you want the raw schema to be directly accessible.
+*   `TITLE`：文档标题。
+*   `DESCRIPTION`：文档简介。
+*   `VERSION`：版本号。
+*   `SERVE_INCLUDE_SCHEMA`：是否暴露原始 Schema 端点。
 
-### CORS Headers
+### CORS 设置
 
 Settings related to Cross-Origin Resource Sharing (CORS), managed by `django-cors-headers`:
 
-*   `CORS_ALLOW_ALL_ORIGINS`: A boolean that, when `True`, allows requests from all origins. **Default:** `True` if `DEBUG` is `True`, `False` otherwise. **For production environments, this should always be `False` for security reasons.**
-*   `CORS_ALLOWED_ORIGINS`: A list of allowed origins for CORS requests. This setting is active when `CORS_ALLOW_ALL_ORIGINS` is `False`. **Default:** Loaded from the `CORS_ALLOWED_ORIGINS` environment variable, allowing you to specify trusted domains.
+*   `CORS_ALLOW_ALL_ORIGINS`：是否允许所有来源；生产应设为 `False`。
+*   `CORS_ALLOWED_ORIGINS`：允许的来源列表，生产环境需明确配置。
 
-## Cache
+## 缓存
 
 These settings configure the caching mechanism, primarily utilizing Redis for efficient data storage and retrieval:
 
-*   `CACHES`: A dictionary defining the cache backends available to the project. **Default:** Includes a `default` cache configured to use `django_redis.cache.RedisCache`.
-*   `LOCATION`: The connection URL for the Redis server. **Default:** `redis://redis:6379` (loaded from `env("REDIS_URL", default="redis://redis:6379")`). This specifies the address and port of your Redis instance.
-*   `OPTIONS`: Additional options passed to the Redis client. **Default:** `{"CLIENT_CLASS": "django_redis.client.DefaultClient"}`. This can be used to customize the Redis client's behavior.
-*   `USER_AGENTS_CACHE`: The cache alias to be used for caching user agent information. **Default:** `default`. This allows for efficient storage and retrieval of user agent strings.
+*   `CACHES`：缓存后端配置，默认使用 Redis。
+*   `LOCATION`：Redis 连接 URL。
+*   `OPTIONS`：Redis 客户端选项。
+*   `USER_AGENTS_CACHE`：UA 缓存别名。
 
 ## Celery
 
 These settings configure Celery, the distributed task queue used for handling asynchronous tasks and periodic jobs:
 
-*   `CELERY_BROKER_URL`: The URL for the Celery message broker, which facilitates communication between the application and Celery workers. **Default:** `redis://redis:6379` (loaded from `env("CELERY_BROKER_URL", default="redis://redis:6379")`).
-*   `CELERY_RESULT_BACKEND`: Specifies where Celery task results are stored after a task completes. **Default:** `django-db` (loaded from `env("CELERY_RESULT_BACKEND", default="django-db")`). This means results are stored in the Django database.
-*   `CELERY_BEAT_SCHEDULER`: Defines the scheduler for periodic tasks. **Default:** `django_celery_beat.schedulers.DatabaseScheduler`. This allows you to manage and schedule recurring tasks directly from the Django admin interface.
-*   `CELERY_ACCEPT_CONTENT`: A list of accepted content types for tasks, ensuring secure deserialization. **Default:** `["application/json"]`.
-*   `CELERY_TASK_SERIALIZER`: The default serialization method used for tasks when they are sent to the broker. **Default:** `json`.
-*   `CELERY_RESULT_SERIALIZER`: The default serialization method for task results when they are stored. **Default:** `json`.
-*   `CELERY_TIMEZONE`: The timezone used by Celery for scheduling and executing tasks. **Default:** `America/Santiago`.
-*   `CELERY_RESULT_EXTENDED`: A boolean that, when `True`, stores extended result information for tasks, providing more details about their execution. **Default:** `True`.
+*   `CELERY_BROKER_URL`：消息代理 URL（默认 Redis）。
+*   `CELERY_RESULT_BACKEND`：结果存储后端（默认 Django DB）。
+*   `CELERY_BEAT_SCHEDULER`：周期任务调度器，支持在后台管理配置。
+*   `CELERY_ACCEPT_CONTENT`：接受的内容类型，默认仅 JSON。
+*   `CELERY_TASK_SERIALIZER`：任务序列化方式，默认 JSON。
+*   `CELERY_RESULT_SERIALIZER`：结果序列化方式，默认 JSON。
+*   `CELERY_TIMEZONE`：任务调度时区。
+*   `CELERY_RESULT_EXTENDED`：扩展结果存储，默认开启。
 
-## Email
+## 邮件
 
 These settings configure the email backend, enabling the application to send emails for various purposes (e.g., user registration, password resets):
 
-*   `EMAIL_HOST`: The hostname or IP address of the SMTP server used for sending emails. **Default:** `smtp.gmail.com` (loaded from `env("EMAIL_HOST", default="smtp.gmail.com")`).
-*   `EMAIL_USE_TLS`: A boolean that determines whether to use TLS (Transport Layer Security) for a secure connection to the SMTP server. **Default:** `True` (loaded from `env.bool("EMAIL_USE_TLS", default=True)`). It is highly recommended to keep this `True` for production.
-*   `EMAIL_PORT`: The port number for the SMTP server. **Default:** `587` (loaded from `env.int("EMAIL_PORT", default=587)`). Common ports are 587 (for TLS) or 465 (for SSL).
-*   `EMAIL_HOST_USER`: The username for authenticating with the SMTP server. **Default:** `""` (loaded from `env("EMAIL_HOST_USER", default="")`). This should be set to your email account username.
-*   `EMAIL_HOST_PASSWORD`: The password for authenticating with the SMTP server. **Default:** `""` (loaded from `env("EMAIL_HOST_PASSWORD", default="")`). This should be set to your email account password or an application-specific password.
+*   `EMAIL_HOST`：SMTP 服务器地址，默认 `smtp.gmail.com`。
+*   `EMAIL_USE_TLS`：是否启用 TLS，默认 `True`。
+*   `EMAIL_PORT`：SMTP 端口，默认 `587`。
+*   `EMAIL_HOST_USER`：SMTP 用户名。
+*   `EMAIL_HOST_PASSWORD`：SMTP 密码或专用密钥。
 
-## Sentry and Logging
+## Sentry 与日志
 
 While the logging system has its own dedicated documentation page ([Logging System](logging.md)), this section briefly covers settings related to error tracking with Sentry and general logging configurations:
 
-*   `IGNORABLE_404_URLS`: A list of regular expressions for URLs that should not trigger 404 errors in logging or error reporting systems (like Sentry). **Default:** Includes patterns for common favicon and Apple touch icon requests, reducing noise in logs.
-*   `LOGGING`: This dictionary contains the detailed configuration for the project's logging system. For a comprehensive understanding of how logging is set up and used, refer to the [Logging System](logging.md) documentation.
-*   `sentry_sdk.init()`: This function initializes the Sentry SDK for error tracking and performance monitoring. **Default:** It is conditionally initialized in production environments (when `DEBUG` is `False`) with parameters such as `dsn` (your Sentry project DSN), `traces_sample_rate=1.0` (for performance monitoring), and `profiles_sample_rate=1.0` (for profiling).
+*   `IGNORABLE_404_URLS`：忽略的 404 路径模式，减少噪声。
+*   `LOGGING`：日志系统配置，详见 [日志系统](logging.md)。
+*   `sentry_sdk.init()`：生产环境初始化 Sentry 用于错误与性能监控。
 
-## Static & Media Files
+## 静态与媒体文件
 
 These settings govern how static files (CSS, JavaScript, images) and user-uploaded media files are handled and served by the Django application:
 
-*   `STORAGES`: Defines the storage backends for different types of files. **Default:** Uses `FileSystemStorage` for default file storage and `whitenoise.storage.CompressedManifestStaticFilesStorage` for static files, which handles compression and caching for production.
-*   `STATIC_URL`: The URL prefix to use when referring to static files. **Default:** `/static/`. For example, if you have a static file `my_app/static/css/style.css`, it would be accessible at `/static/css/style.css`.
-*   `STATICFILES_DIRS`: A list of directories where Django will search for additional static files, beyond those found within individual app's `static/` directories. **Default:** `[root_path("static")]`.
-*   `STATIC_ROOT`: The absolute path to the directory where Django's `collectstatic` command will gather all static files for deployment. **Default:** A temporary directory if `DEBUG` is `True`, otherwise a `static_root` directory within the project root. **This directory should be served directly by your web server in production.**
+*   `STORAGES`：默认文件存储与静态文件存储后端配置（生产启用压缩与指纹）。
+*   `STATIC_URL`：静态文件 URL 前缀，默认 `/static/`。
+*   `STATICFILES_DIRS`：额外静态目录，默认 `[root_path("static")]`。
+*   `STATIC_ROOT`：`collectstatic` 收集的静态输出目录。
 *   `MEDIA_URL`: The URL prefix that handles media files served from `MEDIA_ROOT`. **Default:** `/media/`. This is used for user-uploaded content.
 *   `MEDIA_ROOT`: The absolute path to the directory where user-uploaded media files are stored. **Default:** A `media_root` directory within the project root. **This directory should be configured for serving by your web server.**
 *   `ADMIN_MEDIA_PREFIX`: The URL prefix for Django admin's static media files. **Default:** `/static/admin/`.
